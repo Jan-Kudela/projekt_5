@@ -48,7 +48,7 @@ def create_table(conn):
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 Nazev VARCHAR(100) NOT NULL,
                 Popis VARCHAR (255) NOT NULL,
-                Stav VARCHAR (20) NOT NULL,
+                Stav VARCHAR (20) Nezahájeno,
                 Datum vytvoreni DATE);""")
         
         conn.commit()
@@ -63,6 +63,32 @@ def digit_check(digit_nr):
         return digit_intg
     else:
         return print("Zadaná hodnota musí být číslo.")
+    
+
+def pridat_ukol(conn, task_name, task_cont):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO ukoly (Nazev, Popis) 
+            VALUES (%s, %s)""",(task_name, task_cont)
+        )
+        conn.commit()
+    except mysql.connector.Error as err:
+        print(f"Chyba při vkládání dat: {err}.")
+
+
+def zobrazit_ukoly(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM ukoly")
+        seznam =  cursor.fetchall()
+        return seznam
+
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close()
+
 
 def main():
     
@@ -84,50 +110,41 @@ def main():
                 choice_nr_checked = digit_check(choice_number)
             
                 if choice_nr_checked not in range(1,5):
-                    print("Zadané číslo musí být v rozsahu 1-4")
+                    print("Zadané číslo musí být v rozsahu 1-5")
                 else:
                     break
 
             
-            if choice_nr_checked == 1:
-                while True:
-                    task_name = input("Zadejte název úkolu:")
-                    task_cont = input("Zadejte popis úkolu:")
-                    if not task_name or not task_cont:
-                        print("Název úkolu i jeho popis musí být vyplněny.")
-                    else:
-                        pridat_ukol(task_name, task_cont)
-                        break
-
-            
-            elif choice_nr_checked == 2:
-                if not ukoly:
-                    print("žádný úkol není zadán\n")
-                else:    
-                    zobrazit_ukoly()
-
-            
-            elif choice_nr_checked == 3:
-                if not ukoly:
-                    print("žádný úkol není zadán\n")
+        if choice_nr_checked == 1:
+            while True:
+                task_name = input("Zadejte název úkolu:")
+                task_cont = input("Zadejte popis úkolu:")
+                if not task_name or not task_cont:
+                    print("Název úkolu i jeho popis musí být vyplněny.")
                 else:
-                    zobrazit_ukoly()
-                    while True:
-                        number_to_del = input(
-                        "Zadejte číslo úkolu, který chcete odstranit: "
-                        )
-                        nr_checked = digit_check(number_to_del)
-                        if nr_checked not in range(1,len(ukoly)+1):
-                            print(
-                            f"Zadané číslo musí být v rozsahu 1 - {len(ukoly)}."
-                            )
-                        else:
-                            odstranit_ukol(nr_checked)
-                            break
+                    pridat_ukol(task_name, task_cont)
+                    break
 
+        
+        elif choice_nr_checked == 2:
+            seznam = zobrazit_ukoly()
+            if not seznam:
+                print("žádný úkol není zadán\n")
+            else:    
+                print(seznam)
+
+        
+        elif choice_nr_checked == 3:
+            if not seznam:
+                print("žádný úkol není zadán\n")
             else:
-                print("Program je ukončen.")
-                break
+                print(seznam)
+
+            
+
+        else:
+            print("Program je ukončen.")
+            break
 
 
 if __name__ == "__main__":
