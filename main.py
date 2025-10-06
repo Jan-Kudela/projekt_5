@@ -80,7 +80,6 @@ def pridat_ukol(conn, task_name, task_cont):
         cursor.close()
 
 
-
 def zobrazit_ukoly(conn):
     try:
         cursor = conn.cursor()
@@ -122,6 +121,23 @@ def odstranit_ukol(conn,id_to_delete):
         cursor.close()
 
 
+def seznam_id(conn):
+    try:
+        cursor = conn.cursor()
+        cursor.execute ("SELECT ID FROM ukoly;")
+        id_seznam = cursor.fetchall()
+        id_seznam_nr = []
+        for nr in id_seznam:
+            id_seznam_nr.append(nr[0])
+        
+        return id_seznam_nr
+    
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close()
+        
+
 def main():
     
     conn = connect_to_db()
@@ -136,7 +152,8 @@ def main():
             print("3. Aktualizovat úkol")
             print("4. Odstranit úkol")
             print("5. Ukončit program")
-
+           
+           
             while True:
                     choice_number = input("Vyberte možnost (1-5):")
                     choice_nr_checked = digit_check(choice_number)
@@ -184,8 +201,8 @@ def main():
                             " u kterého chcete změnit stav.")
                         
                         choosen_id_checked = digit_check(choosen_id)
-                        
-                        if choosen_id_checked not in range(1,len(seznam)+1):
+                        id_seznam = seznam_id(conn)
+                        if choosen_id_checked not in id_seznam:
                             print("Zadanému číslu neodpovídá žádný úkol.")
                         else:
                             new_state = input(
@@ -211,8 +228,8 @@ def main():
                             " který chcete trvale odstranit.")
                         
                         id_to_delete_checked = digit_check(id_to_delete)
-                        
-                        if id_to_delete_checked not in range(1,len(seznam)+1):
+                        id_seznam = seznam_id(conn)
+                        if id_to_delete_checked not in id_seznam:
                             print("Zadanému číslu neodpovídá žádný úkol.")
                         else:
                             odstranit_ukol(
