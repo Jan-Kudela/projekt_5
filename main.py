@@ -49,7 +49,7 @@ def create_table(conn):
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 Nazev VARCHAR(100) NOT NULL,
                 Popis VARCHAR (255) NOT NULL,
-                Stav VARCHAR (20) DEFAULT 'Nezahajeno',
+                Stav VARCHAR (20) DEFAULT 'Nezahájeno',
                 Datum_vytvoreni DATE DEFAULT (CURDATE()));""")
         
         conn.commit()
@@ -90,6 +90,21 @@ def zobrazit_ukoly(conn):
         print(f"Chyba při načítání dat: {err}.")
     finally:
         cursor.close()
+
+
+def aktualizovat_ukol(conn, choosen_id, new_state):
+    try:
+        cursor = conn.cursor()
+        cursor.execute ("""UPDATE ukoly
+                        SET Stav = (%s)
+                        WHERE ID = (%s)""",
+                        (new_state, choosen_id))
+    
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close()
+
 
 
 def main():
@@ -141,12 +156,29 @@ def main():
 
             
             elif choice_nr_checked == 3:
+                seznam = zobrazit_ukoly(conn)
                 if not seznam:
                     print("žádný úkol není zadán\n")
-                else:
-                    print(seznam)
-
-                
+                else:    
+                    for line in seznam:
+                        print(f"{line[0]}. {line[1]} - {line[3]}")
+                    
+                    while True:
+                        choosen_id = input(
+                            "Zadejte číslo úkolu," \
+                            " u kterého chcete změnit stav.")
+                        
+                        choosen_id_checked = digit_check(choosen_id)
+                        
+                        if choosen_id_checked not in len(seznam +1):
+                            print("Zadanému číslu neodpovídá žádný úkol.")
+                        else:
+                            new_state = input(
+                                "Zadejte nový stav 'Probíhá' nebo 'Hotovo':")
+                            aktualizovat_ukol(
+                                conn,choosen_id_checked,new_state
+                                )
+                            print("Úkol úspěšně aktualizován.")
 
             else:
                 print("Program je ukončen.")
