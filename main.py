@@ -76,6 +76,9 @@ def pridat_ukol(conn, task_name, task_cont):
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při vkládání dat: {err}.")
+    finally:
+        cursor.close()
+
 
 
 def zobrazit_ukoly(conn):
@@ -97,14 +100,26 @@ def aktualizovat_ukol(conn, choosen_id, new_state):
         cursor = conn.cursor()
         cursor.execute ("""UPDATE ukoly
                         SET Stav = (%s)
-                        WHERE ID = (%s)""",
+                        WHERE ID = (%s);""",
                         (new_state, choosen_id))
-    
+        conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
     finally:
         cursor.close()
 
+
+def odstranit_ukol(conn,id_to_delete):
+    try: 
+        cursor = conn.cursor()
+        cursor.execute ("""DELETE FROM ukoly
+                        WHERE ID = (%s);""",(id_to_delete,)
+        )
+        conn.commit()
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close()
 
 
 def main():
@@ -123,7 +138,7 @@ def main():
             print("5. Ukončit program")
 
             while True:
-                    choice_number = (input("Vyberte možnost (1-5):"))
+                    choice_number = input("Vyberte možnost (1-5):")
                     choice_nr_checked = digit_check(choice_number)
                 
                     if choice_nr_checked not in range(1,6):
@@ -170,19 +185,46 @@ def main():
                         
                         choosen_id_checked = digit_check(choosen_id)
                         
-                        if choosen_id_checked not in len(seznam +1):
+                        if choosen_id_checked not in range(1,len(seznam)+1):
                             print("Zadanému číslu neodpovídá žádný úkol.")
                         else:
                             new_state = input(
                                 "Zadejte nový stav 'Probíhá' nebo 'Hotovo':")
                             aktualizovat_ukol(
-                                conn,choosen_id_checked,new_state
-                                )
-                            print("Úkol úspěšně aktualizován.")
+                                conn,choosen_id,new_state)
+                            print("Úkol byl úspěšně aktualizován.")
+                            break
+
+            elif choice_nr_checked == 4:
+                seznam = zobrazit_ukoly(conn)
+                if not seznam:
+                    print("žádný úkol není zadán\n")
+                else:    
+                    for line in seznam:
+                        print(
+                    f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
+                    )
+                    
+                    while True:
+                        id_to_delete = input(
+                            "Zadejte číslo úkolu," \
+                            " který chcete trvale odstranit.")
+                        
+                        id_to_delete_checked = digit_check(id_to_delete)
+                        
+                        if id_to_delete_checked not in range(1,len(seznam)+1):
+                            print("Zadanému číslu neodpovídá žádný úkol.")
+                        else:
+                            odstranit_ukol(
+                                conn,id_to_delete_checked)
+                            print("Úkol byl úspěšně odstraněn.")
+                            break
+
 
             else:
                 print("Program je ukončen.")
                 break
+
     else:
         print("Nelze se připojit k databázi.")
 
