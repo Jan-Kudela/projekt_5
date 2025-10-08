@@ -12,9 +12,11 @@ PASSWORD = "19791979"
 
 
 def create_database(cursor, db_name):
+    "vytvoří databázi, pokud již neexistuje"
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
 
 def connect_to_db():
+    "vytvoří připojení k mysql a vytvoří databázi"
     try:
         conn = mysql.connector.connect(
             host = "localhost",
@@ -42,6 +44,8 @@ def connect_to_db():
     
 
 def create_table(conn):
+    """vytvoří tabulku 'ukoly' se sloupci ID, Nazev, Popis, Stav,
+    a datum"""
     cursor = conn.cursor()
     try:
         cursor.execute("""
@@ -53,12 +57,14 @@ def create_table(conn):
                 Datum_vytvoreni DATE DEFAULT (CURDATE()));""")
         
         conn.commit()
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
     finally:
         cursor.close()
 
 
 def digit_check(digit_nr):
-    """funkce kontroluje, zda je vstup číslo a převádí jej na integer"""
+    "funkce kontroluje, zda je vstup číslo a převádí jej na integer"
     if digit_nr.isdigit():
         digit_intg = int(digit_nr)
         return digit_intg
@@ -67,6 +73,7 @@ def digit_check(digit_nr):
     
 
 def pridat_ukol(conn, task_name, task_cont):
+    "přidá do tabulky úkol, zadává se název a popis úkolu."
     try:
         cursor = conn.cursor()
         cursor.execute("""
@@ -81,6 +88,7 @@ def pridat_ukol(conn, task_name, task_cont):
 
 
 def zobrazit_ukoly(conn):
+    "zobrazuje všechny zadané úkoly s tabulky 'ukoly'"
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM ukoly")
@@ -95,6 +103,7 @@ def zobrazit_ukoly(conn):
 
 
 def aktualizovat_ukol(conn, choosen_id, new_state):
+    "aktualizuje stav úkolu podle zvoleného ID"
     try:
         cursor = conn.cursor()
         cursor.execute ("""UPDATE ukoly
@@ -109,6 +118,7 @@ def aktualizovat_ukol(conn, choosen_id, new_state):
 
 
 def odstranit_ukol(conn,id_to_delete):
+    "smaže vybraný úkol podle zvoleného ID"
     try: 
         cursor = conn.cursor()
         cursor.execute ("""DELETE FROM ukoly
@@ -122,6 +132,7 @@ def odstranit_ukol(conn,id_to_delete):
 
 
 def seznam_id(conn):
+    "vytváří list aktuálních ID v tabulce"
     try:
         cursor = conn.cursor()
         cursor.execute ("SELECT ID FROM ukoly;")
