@@ -1,9 +1,3 @@
-#pripojeni_db():
-
-#vytvoreni_tabulky()
-
-#hlavni_menu()
-
 import mysql.connector
 
 
@@ -41,7 +35,6 @@ def connect_to_db():
         print (f"Chyba při připojování: {err}.")
         return None
 
-    
 
 def create_table(conn):
     """vytvoří tabulku 'ukoly' se sloupci ID, Nazev, Popis, Stav,
@@ -153,7 +146,7 @@ def main():
     
     conn = connect_to_db()
     if conn:
-        cursor = conn.cursor()
+        
         create_table(conn)
 
         while True:
@@ -173,7 +166,6 @@ def main():
                         print("Zadané číslo musí být v rozsahu 1-5")
                     else:
                         break
-
                 
             if choice_nr_checked == 1:
                 while True:
@@ -185,7 +177,6 @@ def main():
                         pridat_ukol(conn,task_name, task_cont)
                         print(f"Úkol {task_name} byl úspěšně zadán.")
                         break
-
             
             elif choice_nr_checked == 2:
                 seznam = zobrazit_ukoly(conn)
@@ -196,7 +187,6 @@ def main():
                         print(
                     f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
                     )
-
             
             elif choice_nr_checked == 3:
                 seznam = zobrazit_ukoly(conn)
