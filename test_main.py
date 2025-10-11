@@ -103,11 +103,43 @@ def test_pridat_ukol_negative(connect_to_db,create_fake_table):
     with pytest.raises( mysql.connector.Error):
         pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
         
-        # cursor = connect_to_db.cursor()
-        # cursor.execute("SELECT * FROM ukoly WHERE Nazev = 'Pes';")
-        # seznam = cursor.fetchall()
-        # cursor.close()
 
-        # assert seznam[0][1] == "Pes"
-        # assert len(seznam) == 1
+def test_aktualizovat_ukol_positive(connect_to_db,create_table):
     
+    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
+    aktualizovat_ukol(connect_to_db, 1, "Hotovo")
+
+    cursor = connect_to_db.cursor()
+    cursor.execute("SELECT * FROM ukoly;")
+    seznam = cursor.fetchall()
+    cursor.close()
+
+    assert seznam[0][3] == "Hotovo"
+
+
+def test_aktualizovat_ukol_negative(connect_to_db,create_fake_table):
+    
+    with pytest.raises( mysql.connector.Error):
+        aktualizovat_ukol(connect_to_db, 1, "Hotovo")
+   
+
+def test_odstranit_ukol_positive(connect_to_db,create_table):
+    
+    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
+    pridat_ukol(connect_to_db, "Kočka", "Nakrmit")
+
+    odstranit_ukol(connect_to_db, 1)
+
+    cursor = connect_to_db.cursor()
+    cursor.execute("SELECT * FROM ukoly;")
+    seznam = cursor.fetchall()
+    cursor.close()
+
+    assert len(seznam) == 1
+
+
+def test_odstranit_ukol_negative(connect_to_db,create_fake_table):
+
+    with pytest.raises( mysql.connector.Error):
+        odstranit_ukol(connect_to_db, 1)
+
