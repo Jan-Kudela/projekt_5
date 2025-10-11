@@ -52,6 +52,7 @@ def create_table(conn):
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
@@ -76,6 +77,7 @@ def pridat_ukol(conn, task_name, task_cont):
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při vkládání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
@@ -91,6 +93,7 @@ def zobrazit_ukoly(conn):
 
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
@@ -108,6 +111,7 @@ def filtr_stavu_nezahajeno(conn):
 
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close() 
 
@@ -125,6 +129,7 @@ def filtr_stavu_probiha(conn):
 
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close() 
 
@@ -140,6 +145,7 @@ def aktualizovat_ukol(conn, choosen_id, new_state):
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
@@ -154,6 +160,7 @@ def odstranit_ukol(conn,id_to_delete):
         conn.commit()
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
@@ -172,6 +179,7 @@ def seznam_id(conn):
     
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
+        raise
     finally:
         cursor.close()
 
