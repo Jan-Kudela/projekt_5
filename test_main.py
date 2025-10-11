@@ -78,7 +78,7 @@ def create_table(connect_to_db):
 
 @pytest.fixture
 def create_fake_table(connect_to_db):
-    "vytvoří tabulku 'fake_table'"
+    "vytvoří tabulku 'fake_table' pouze pro účely testování připojení"
     cursor = connect_to_db.cursor()
     try:
         cursor.execute("""
