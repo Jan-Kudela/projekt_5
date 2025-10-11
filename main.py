@@ -95,6 +95,40 @@ def zobrazit_ukoly(conn):
         cursor.close()
 
 
+def filtr_stavu_nezahajeno(conn):
+    "Vrátí pouze úkoly se stavem 'Nezahájeno'"  
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+        "SELECT * FROM ukoly WHERE Stav ='Nezahájeno'"
+        )
+        seznam = cursor.fetchall()
+        
+        return seznam
+
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close() 
+
+
+def filtr_stavu_probiha(conn):
+    "Vrátí pouze úkoly se stavem 'Probíhá'"  
+    try:
+        cursor = conn.cursor()
+        cursor.execute(
+        "SELECT * FROM ukoly WHERE Stav ='Probíhá'"
+        )
+        seznam = cursor.fetchall()
+        
+        return seznam
+
+    except mysql.connector.Error as err:
+        print(f"Chyba při načítání dat: {err}.")
+    finally:
+        cursor.close() 
+
+
 def aktualizovat_ukol(conn, choosen_id, new_state):
     "aktualizuje stav úkolu podle zvoleného ID"
     try:
@@ -140,6 +174,13 @@ def seznam_id(conn):
         print(f"Chyba při načítání dat: {err}.")
     finally:
         cursor.close()
+
+
+def zalomeni_radku_ukolu(seznam):
+    for line in seznam:
+                        print(
+                    f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
+                    )
         
 
 def main():
@@ -183,10 +224,23 @@ def main():
                 if not seznam:
                     print("žádný úkol není zadán\n")
                 else:    
-                    for line in seznam:
-                        print(
-                    f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
-                    )
+                    zalomeni_radku_ukolu(seznam)
+                    while True:
+                        filtr = input(
+                            "Vyfiltrovat nezahájené úkoly (zadejte 'n') nebo "
+                            "probíhající (zadejte'p')? Zpět ('z')"
+                        )
+                        if filtr == "n":
+                            seznam_n = filtr_stavu_nezahajeno(conn)
+                            zalomeni_radku_ukolu(seznam_n)
+                        elif filtr == "p":
+                            seznam_p = filtr_stavu_probiha(conn)
+                            zalomeni_radku_ukolu(seznam_p)
+                        elif filtr == "z":
+                            break
+                        else:
+                            print("Vyberte ze zadaných možností n, p, z.")
+                            
             
             elif choice_nr_checked == 3:
                 seznam = zobrazit_ukoly(conn)
