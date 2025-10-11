@@ -6,7 +6,8 @@ PASSWORD = "19791979"
 
 @pytest.fixture
 def connect_to_db():
-    "vytvoří připojení k mysql a vytvoří testovací databázi"
+    """vytvoří připojení k mysql a vytvoří testovací databázi,
+       kterou po testech smaže"""
     try:
         conn = mysql.connector.connect(
             host = "localhost",
@@ -32,6 +33,20 @@ def connect_to_db():
     
     finally:
         conn.close()
+        
+        #smazání testovací databáze, v rámci vizuální kontroly
+        #v mySQL Workbench lze případně hashtagnout
+        conn_clean = mysql.connector.connect(
+            host = "localhost",
+            user = "root",
+            password = PASSWORD
+            )
+        cursor = conn_clean.cursor()
+        cursor.execute("DROP DATABASE IF EXISTS test_library;")
+        conn_clean.commit()
+        cursor.close()
+        conn_clean.close()
+
     
 @pytest.fixture
 def create_table(connect_to_db):
@@ -55,7 +70,7 @@ def create_table(connect_to_db):
     
     # pokud chci vizuálně zkontrolovat zadání úkolu v databázi SQL
     # nutno označit hashtagem níže uvedené dva řádky, které jinak tabulku
-    # po provedení testu smažou, tabulku je pak nutné smazat ručně 
+    # po provedení testu smažou, tabulku je pak nutné v mySQL Workbench 
     cursor.execute("DROP TABLE IF EXISTS ukoly;")
     connect_to_db.commit()
     cursor.close()
