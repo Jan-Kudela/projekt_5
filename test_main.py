@@ -111,14 +111,14 @@ def test_pridat_ukol_positive(connect_to_db,create_table):
 
     assert seznam[0][1] == "Pes"
     assert len(seznam) == 1
-
-
-def test_pridat_ukol_negative(connect_to_db,create_fake_table):
-    
-    with pytest.raises( mysql.connector.Error):
-        pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
         
 
+def test_pridat_ukol_negative(connect_to_db,create_table):
+    
+    with pytest.raises( mysql.connector.Error):   
+        pridat_ukol(connect_to_db, None, "Vyvenčit")
+    
+                
 def test_aktualizovat_ukol_positive(connect_to_db,create_table):
     
     pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
@@ -153,8 +153,17 @@ def test_odstranit_ukol_positive(connect_to_db,create_table):
     assert len(seznam) == 1
 
 
-def test_odstranit_ukol_negative(connect_to_db,create_fake_table):
+def test_odstranit_ukol_negative(connect_to_db,create_table):
+    #testuje, zda při smazání neplatného ID zůstane správný počet záznamů
+    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
+    pridat_ukol(connect_to_db, "Kočka", "Nakrmit")
 
-    with pytest.raises( mysql.connector.Error):
-        odstranit_ukol(connect_to_db, 1)
+    odstranit_ukol(connect_to_db, 546)
+
+    cursor = connect_to_db.cursor()
+    cursor.execute("SELECT * FROM ukoly;")
+    seznam = cursor.fetchall()
+    cursor.close()
+
+    assert len(seznam) == 2
 
