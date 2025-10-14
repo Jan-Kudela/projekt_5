@@ -34,7 +34,7 @@ def connect_to_db():
     except mysql.connector.Error as err:
         print (f"Chyba při připojování: {err}.")
         return None
-
+        
 
 def create_table(conn):
     """vytvoří tabulku 'ukoly' se sloupci ID, Nazev, Popis, Stav,
@@ -63,7 +63,7 @@ def digit_check(digit_nr):
         digit_intg = int(digit_nr)
         return digit_intg
     else:
-        return print("Zadaná hodnota musí být číslo.")
+        return None
     
 
 def pridat_ukol(conn, task_name, task_cont):
@@ -98,30 +98,12 @@ def zobrazit_ukoly(conn):
         cursor.close()
 
 
-def filtr_stavu_nezahajeno(conn):
-    "Vrátí pouze úkoly se stavem 'Nezahájeno'"  
+def filtr_stavu(conn,stav):
+    "Vrátí pouze úkoly se stavem v parametru 'stav'"  
     try:
         cursor = conn.cursor()
         cursor.execute(
-        "SELECT * FROM ukoly WHERE Stav ='Nezahájeno'"
-        )
-        seznam = cursor.fetchall()
-        
-        return seznam
-
-    except mysql.connector.Error as err:
-        print(f"Chyba při načítání dat: {err}.")
-        raise
-    finally:
-        cursor.close() 
-
-
-def filtr_stavu_probiha(conn):
-    "Vrátí pouze úkoly se stavem 'Probíhá'"  
-    try:
-        cursor = conn.cursor()
-        cursor.execute(
-        "SELECT * FROM ukoly WHERE Stav ='Probíhá'"
+        "SELECT * FROM ukoly WHERE Stav = %s",(stav,)
         )
         seznam = cursor.fetchall()
         
@@ -239,10 +221,12 @@ def main():
                             "probíhající (zadejte'p')? Zpět ('z')"
                         )
                         if filtr == "n":
-                            seznam_n = filtr_stavu_nezahajeno(conn)
+                            
+                            seznam_n = filtr_stavu(conn, "Nezahájeno")
                             zalomeni_radku_ukolu(seznam_n)
                         elif filtr == "p":
-                            seznam_p = filtr_stavu_probiha(conn)
+                            
+                            seznam_p = filtr_stavu(conn, "Probíhá")
                             zalomeni_radku_ukolu(seznam_p)
                         elif filtr == "z":
                             break
