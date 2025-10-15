@@ -9,6 +9,7 @@ def create_database(cursor, db_name):
     "vytvoří databázi, pokud již neexistuje"
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
 
+
 def connect_to_db():
     "vytvoří připojení k mysql a vytvoří databázi"
     try:
@@ -50,6 +51,7 @@ def create_table(conn):
                 Datum_vytvoreni DATE DEFAULT (CURDATE()));""")
         
         conn.commit()
+
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
         raise
@@ -75,6 +77,7 @@ def pridat_ukol(conn, task_name, task_cont):
             VALUES (%s, %s)""",(task_name, task_cont)
         )
         conn.commit()
+
     except mysql.connector.Error as err:
         print(f"Chyba při vkládání dat: {err}.")
         raise
@@ -88,7 +91,6 @@ def zobrazit_ukoly(conn):
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM ukoly")
         seznam = cursor.fetchall()
-        
         return seznam
 
     except mysql.connector.Error as err:
@@ -106,7 +108,6 @@ def filtr_stavu(conn,stav):
         "SELECT * FROM ukoly WHERE Stav = %s",(stav,)
         )
         seznam = cursor.fetchall()
-        
         return seznam
 
     except mysql.connector.Error as err:
@@ -125,6 +126,7 @@ def aktualizovat_ukol(conn, choosen_id, new_state):
                         WHERE ID = (%s);""",
                         (new_state, choosen_id))
         conn.commit()
+
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
         raise
@@ -140,6 +142,7 @@ def odstranit_ukol(conn,id_to_delete):
                         WHERE ID = (%s);""",(id_to_delete,)
         )
         conn.commit()
+
     except mysql.connector.Error as err:
         print(f"Chyba při načítání dat: {err}.")
         raise
@@ -168,16 +171,14 @@ def seznam_id(conn):
 
 def zalomeni_radku_ukolu(seznam):
     for line in seznam:
-                        print(
-                    f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
-                    )
+        print(f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}")
         
 
 def main():
     
     conn = connect_to_db()
+    
     if conn:
-        
         create_table(conn)
 
         while True:
@@ -187,7 +188,6 @@ def main():
             print("3. Aktualizovat úkol")
             print("4. Odstranit úkol")
             print("5. Ukončit program")
-           
            
             while True:
                     choice_number = input("Vyberte možnost (1-5):")
@@ -233,7 +233,6 @@ def main():
                         else:
                             print("Vyberte ze zadaných možností n, p, z.")
                             
-            
             elif choice_nr_checked == 3:
                 seznam = zobrazit_ukoly(conn)
                 if not seznam:
@@ -283,7 +282,6 @@ def main():
                                 conn,id_to_delete_checked)
                             print("Úkol byl úspěšně odstraněn.")
                             break
-
 
             else:
                 print("Program je ukončen.")
