@@ -1,4 +1,4 @@
-
+import mysql.connector
 
 DB_NAME = "manager_library"
 PASSWORD = "19791979"
@@ -41,8 +41,10 @@ def create_table(conn):
                 ID INT PRIMARY KEY AUTO_INCREMENT,
                 Nazev VARCHAR(100) NOT NULL,
                 Popis VARCHAR (255) NOT NULL,
-                Stav VARCHAR (20) DEFAULT 'Nezahájeno',
-                Datum_vytvoreni DATE DEFAULT (CURDATE()));""")
+                Stav ENUM('nezahájeno', 'probíhá', 'hotovo') DEFAULT 'nezahájeno',
+                Datum_vytvoreni DATE DEFAULT (CURDATE())
+            );"""
+        )
         
         conn.commit()
 

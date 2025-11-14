@@ -1,7 +1,11 @@
 import mysql.connector
 from db_functions import create_database, connect_to_db, create_table
-from tasks import pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, odstranit_ukol
-from other_func import filtr_stavu, digit_check, zalomeni_radku_ukolu, seznam_id
+from tasks import (
+    pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, odstranit_ukol
+)
+from other_func import (
+    filtr_stavu, digit_check, zalomeni_radku_ukolu, seznam_id
+)
 
 
 def main():
