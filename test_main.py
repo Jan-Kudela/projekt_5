@@ -1,6 +1,6 @@
 import pytest
 import mysql.connector
-from main import pridat_ukol, aktualizovat_ukol, odstranit_ukol
+from tasks import pridat_ukol_db, aktualizovat_ukol_db, odstranit_ukol_db
 
 PASSWORD = "19791979"
 
@@ -102,7 +102,7 @@ def create_fake_table(connect_to_db):
 
 def test_pridat_ukol_positive(connect_to_db,create_table):
     
-    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
+    pridat_ukol_db(connect_to_db, "Pes", "Vyvenčit")
     
     cursor = connect_to_db.cursor()
     cursor.execute("SELECT * FROM ukoly WHERE Nazev = 'Pes';")
@@ -117,13 +117,13 @@ def test_pridat_ukol_negative(connect_to_db,create_table):
     """testuje, zda se zobrazí chybová hláška při zadání
         prádzné hodnoty 'Nazev' """
     with pytest.raises( mysql.connector.Error):   
-        pridat_ukol(connect_to_db, None, "Vyvenčit")
+        pridat_ukol_db(connect_to_db, None, "Vyvenčit")
     
                 
 def test_aktualizovat_ukol_positive(connect_to_db,create_table):
     
-    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
-    aktualizovat_ukol(connect_to_db, 1, "Hotovo")
+    pridat_ukol_db(connect_to_db, "Pes", "Vyvenčit")
+    aktualizovat_ukol_db(connect_to_db, 1, "Hotovo")
 
     cursor = connect_to_db.cursor()
     cursor.execute("SELECT * FROM ukoly;")
@@ -137,15 +137,15 @@ def test_aktualizovat_ukol_negative(connect_to_db,create_fake_table):
     """testuje, zda se zobrazí chybová hláška,
       když funkce nenajde zadanou tabulku """
     with pytest.raises( mysql.connector.Error):
-        aktualizovat_ukol(connect_to_db, 1, "Hotovo")
+        aktualizovat_ukol_db(connect_to_db, 1, "Hotovo")
    
 
 def test_odstranit_ukol_positive(connect_to_db,create_table):
     
-    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
-    pridat_ukol(connect_to_db, "Kočka", "Nakrmit")
+    pridat_ukol_db(connect_to_db, "Pes", "Vyvenčit")
+    pridat_ukol_db(connect_to_db, "Kočka", "Nakrmit")
 
-    odstranit_ukol(connect_to_db, 1)
+    odstranit_ukol_db(connect_to_db, 1)
 
     cursor = connect_to_db.cursor()
     cursor.execute("SELECT * FROM ukoly;")
@@ -157,10 +157,10 @@ def test_odstranit_ukol_positive(connect_to_db,create_table):
 
 def test_odstranit_ukol_negative(connect_to_db,create_table):
     "testuje, zda při smazání neplatného ID zůstane správný počet záznamů"
-    pridat_ukol(connect_to_db, "Pes", "Vyvenčit")
-    pridat_ukol(connect_to_db, "Kočka", "Nakrmit")
+    pridat_ukol_db(connect_to_db, "Pes", "Vyvenčit")
+    pridat_ukol_db(connect_to_db, "Kočka", "Nakrmit")
 
-    odstranit_ukol(connect_to_db, 546)
+    odstranit_ukol_db(connect_to_db, 546)
 
     cursor = connect_to_db.cursor()
     cursor.execute("SELECT * FROM ukoly;")

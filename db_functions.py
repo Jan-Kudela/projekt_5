@@ -25,10 +25,6 @@ def connect_to_db():
     except mysql.connector.Error as err:
         print (f"Chyba při připojování: {err}.")
         return None
-    
-    finally:
-        cursor.close()
-        conn.close()
 
 
 def create_table(conn):

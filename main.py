@@ -1,10 +1,7 @@
 import mysql.connector
-from db_functions import create_database, connect_to_db, create_table
+from db_functions import connect_to_db, create_table
 from tasks import (
-    pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, odstranit_ukol
-)
-from other_func import (
-    filtr_stavu, digit_check, zalomeni_radku_ukolu, seznam_id
+    pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, odstranit_ukol, digit_check
 )
 
 
@@ -33,89 +30,16 @@ def main():
                         break
                 
             if choice_nr_checked == 1:
-                while True:
-                    task_name = input("Zadejte název úkolu:")
-                    task_cont = input("Zadejte popis úkolu:")
-                    if not task_name or not task_cont:
-                        print("Název úkolu i jeho popis musí být vyplněny.")
-                    else:
-                        pridat_ukol(conn,task_name, task_cont)
-                        print(f"Úkol {task_name} byl úspěšně zadán.")
-                        break
-            
+                pridat_ukol(conn)
+                
             elif choice_nr_checked == 2:
-                seznam = zobrazit_ukoly(conn)
-                if not seznam:
-                    print("žádný úkol není zadán\n")
-                else:    
-                    zalomeni_radku_ukolu(seznam)
-                    while True:
-                        filtr = input(
-                            "Vyfiltrovat nezahájené úkoly (zadejte 'n') nebo "
-                            "probíhající (zadejte'p')? Zpět ('z')"
-                        )
-                        if filtr == "n":
-                            
-                            seznam_n = filtr_stavu(conn, "Nezahájeno")
-                            zalomeni_radku_ukolu(seznam_n)
-                        elif filtr == "p":
-                            
-                            seznam_p = filtr_stavu(conn, "Probíhá")
-                            zalomeni_radku_ukolu(seznam_p)
-                        elif filtr == "z":
-                            break
-                        else:
-                            print("Vyberte ze zadaných možností n, p, z.")
+                zobrazit_ukoly(conn)
                             
             elif choice_nr_checked == 3:
-                seznam = zobrazit_ukoly(conn)
-                if not seznam:
-                    print("žádný úkol není zadán\n")
-                else:    
-                    for line in seznam:
-                        print(f"{line[0]}. {line[1]} - {line[3]}")
-                    
-                    while True:
-                        choosen_id = input(
-                            "Zadejte číslo úkolu," \
-                            " u kterého chcete změnit stav.")
-                        
-                        choosen_id_checked = digit_check(choosen_id)
-                        id_seznam = seznam_id(conn)
-                        if choosen_id_checked not in id_seznam:
-                            print("Zadanému číslu neodpovídá žádný úkol.")
-                        else:
-                            new_state = input(
-                                "Zadejte nový stav 'Probíhá' nebo 'Hotovo':")
-                            aktualizovat_ukol(
-                                conn,choosen_id,new_state)
-                            print("Úkol byl úspěšně aktualizován.")
-                            break
+                aktualizovat_ukol(conn)
 
             elif choice_nr_checked == 4:
-                seznam = zobrazit_ukoly(conn)
-                if not seznam:
-                    print("žádný úkol není zadán\n")
-                else:    
-                    for line in seznam:
-                        print(
-                    f"{line[0]}. {line[1]} - {line[2]} - {line[3]} - {line[4]}"
-                    )
-                    
-                    while True:
-                        id_to_delete = input(
-                            "Zadejte číslo úkolu," \
-                            " který chcete trvale odstranit.")
-                        
-                        id_to_delete_checked = digit_check(id_to_delete)
-                        id_seznam = seznam_id(conn)
-                        if id_to_delete_checked not in id_seznam:
-                            print("Zadanému číslu neodpovídá žádný úkol.")
-                        else:
-                            odstranit_ukol(
-                                conn,id_to_delete_checked)
-                            print("Úkol byl úspěšně odstraněn.")
-                            break
+                odstranit_ukol(conn)
 
             else:
                 print("Program je ukončen.")
