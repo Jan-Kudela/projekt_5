@@ -1,7 +1,8 @@
 import mysql.connector
 from db_functions import connect_to_db, create_table
 from tasks import (
-    pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, odstranit_ukol, digit_check
+    pridat_ukol, zobrazit_ukoly, aktualizovat_ukol, 
+    odstranit_ukol, kontrola_integeru
 )
 
 
@@ -21,13 +22,13 @@ def main():
             print("5. Ukončit program")
            
             while True:
-                    choice_number = input("Vyberte možnost (1-5):")
-                    choice_nr_checked = digit_check(choice_number)
-                
-                    if choice_nr_checked not in range(1,6):
-                        print("Zadané číslo musí být v rozsahu 1-5")
-                    else:
-                        break
+                choice_number = input("Vyberte možnost (1-5):")
+                choice_nr_checked = kontrola_integeru(choice_number)
+            
+                if choice_nr_checked not in range(1,6):
+                    print("Zadané číslo musí být v rozsahu 1-5")
+                else:
+                    break
                 
             if choice_nr_checked == 1:
                 pridat_ukol(conn)
@@ -43,6 +44,7 @@ def main():
 
             else:
                 print("Program je ukončen.")
+                conn.close()
                 break
 
     else:

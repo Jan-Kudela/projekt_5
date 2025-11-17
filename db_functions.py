@@ -1,5 +1,7 @@
 import mysql.connector
 
+USER = "root"
+HOST = "localhost"
 DB_NAME = "manager_library"
 PASSWORD = "19791979"
 
@@ -12,8 +14,8 @@ def connect_to_db():
     """vytvoří připojení k mysql a vytvoří databázi"""
     try:
         conn = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
+            host = HOST,
+            user = USER,
             password = PASSWORD
             )
         cursor = conn.cursor()

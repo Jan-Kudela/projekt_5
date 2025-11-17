@@ -2,7 +2,6 @@ import pytest
 import mysql.connector
 from tasks import pridat_ukol_db, aktualizovat_ukol_db, odstranit_ukol_db
 
-PASSWORD = "19791979"
 
 @pytest.fixture
 def connect_to_db():
@@ -12,20 +11,11 @@ def connect_to_db():
         conn = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = PASSWORD
+            password = "19791979"
             )
         cursor = conn.cursor()
         cursor.execute("CREATE DATABASE IF NOT EXISTS test_library;")
-        cursor.close()
-        conn.close()
-
-        conn = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = PASSWORD,
-            database = "test_library"
-            )
-        print("Připojeno k databázi test_library.")
+        cursor.execute("USE test_library;")
         yield conn
 
     except mysql.connector.Error as err:
@@ -39,7 +29,7 @@ def connect_to_db():
         conn_clean = mysql.connector.connect(
             host = "localhost",
             user = "root",
-            password = PASSWORD
+            password = "19791979"
             )
         cursor = conn_clean.cursor()
         cursor.execute("DROP DATABASE IF EXISTS test_library;")

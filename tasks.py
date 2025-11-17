@@ -13,7 +13,7 @@ def pridat_ukol(conn):
 
 
 def pridat_ukol_db(conn, task_name, task_cont):
-    """přidá do tabulky úkol, zadává se název a popis úkolu."""
+    """přidá do databáze úkol, zadává se název a popis úkolu."""
     try:
         cursor = conn.cursor()
         cursor.execute("""
@@ -94,7 +94,7 @@ def zobrazit_ukoly_db(conn):
         cursor.close()
 
 
-def digit_check(digit_nr):
+def kontrola_integeru(digit_nr):
     """funkce kontroluje, zda je vstup číslo a převádí jej na integer"""
     if digit_nr.isdigit():
         digit_intg = int(digit_nr)
@@ -122,6 +122,16 @@ def seznam_id(conn):
         cursor.close()
 
 
+stavy = ["probíhá", "hotovo"]
+def kontrola_stavu(stav):
+    while True: 
+        if stav in stavy:
+            return stav
+        else: 
+            print("Zadaný stav neexistuje nebo je napsán chybně.")
+            stav = input("Zadejte stav znova - probíhá / hotovo: ")
+
+
 def aktualizovat_ukol(conn):
     seznam = zobrazit_ukoly_db(conn)
     if not seznam:
@@ -135,17 +145,17 @@ def aktualizovat_ukol(conn):
                 "Zadejte číslo úkolu," \
                 " u kterého chcete změnit stav.")
             
-            choosen_id_checked = digit_check(choosen_id)
+            choosen_id_checked = kontrola_integeru(choosen_id)
             id_seznam = seznam_id(conn)
             if choosen_id_checked not in id_seznam:
                 print("Zadanému číslu neodpovídá žádný úkol.")
             else:
-                new_state = input(
-                    "Zadejte nový stav 'Probíhá' nebo 'Hotovo':")
-                aktualizovat_ukol_db(
-                    conn,choosen_id,new_state)
-                print("Úkol byl úspěšně aktualizován.")
                 break
+        
+        new_state = input("Zadejte nový stav 'probíhá' nebo 'hotovo':")
+        stav_ok = kontrola_stavu(new_state)
+        aktualizovat_ukol_db(conn,choosen_id_checked,stav_ok)
+        print("Úkol byl úspěšně aktualizován.")
 
 
 def aktualizovat_ukol_db(conn, choosen_id, new_state):
@@ -159,7 +169,7 @@ def aktualizovat_ukol_db(conn, choosen_id, new_state):
         conn.commit()
 
     except mysql.connector.Error as err:
-        print(f"Chyba při načítání dat: {err}.")
+        print(f"Chyba při aktualizaci úkolu: {err}.")
         raise
     finally:
         cursor.close()
@@ -180,7 +190,7 @@ def odstranit_ukol(conn):
                 "Zadejte číslo úkolu," \
                 " který chcete trvale odstranit.")
             
-            id_to_delete_checked = digit_check(id_to_delete)
+            id_to_delete_checked = kontrola_integeru(id_to_delete)
             id_seznam = seznam_id(conn)
             if id_to_delete_checked not in id_seznam:
                 print("Zadanému číslu neodpovídá žádný úkol.")
