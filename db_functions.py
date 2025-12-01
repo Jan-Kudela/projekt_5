@@ -1,9 +1,15 @@
 import mysql.connector
+from dotenv import load_dotenv
+import os
 
-USER = "root"
-HOST = "localhost"
-DB_NAME = "manager_library"
-PASSWORD = "19791979"
+
+load_dotenv()
+
+host_env = os.getenv("HOST")
+user_env = os.getenv("USER")
+password_env = os.getenv("PASSWORD")
+db_name_env = os.getenv("DB_NAME")
+
 
 def create_database(cursor, db_name):
     """vytvoří databázi, pokud již neexistuje"""
@@ -14,14 +20,14 @@ def connect_to_db():
     """vytvoří připojení k mysql a vytvoří databázi"""
     try:
         conn = mysql.connector.connect(
-            host = HOST,
-            user = USER,
-            password = PASSWORD
+            host = host_env,
+            user = user_env,
+            password = password_env
             )
         cursor = conn.cursor()
-        create_database(cursor, DB_NAME)
-        cursor.execute(f"USE {DB_NAME};")
-        print(f"Připojeno k databázi {DB_NAME}.")
+        create_database(cursor, db_name_env)
+        cursor.execute(f"USE {db_name_env};")
+        print(f"Připojeno k databázi {db_name_env}.")
         return conn
 
     except mysql.connector.Error as err:

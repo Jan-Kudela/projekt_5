@@ -1,7 +1,16 @@
 import pytest
 import mysql.connector
 from tasks import pridat_ukol_db, aktualizovat_ukol_db, odstranit_ukol_db
+from dotenv import load_dotenv
+import os
 
+
+load_dotenv()
+
+host_env = os.getenv("HOST")
+user_env = os.getenv("USER")
+password_env = os.getenv("PASSWORD")
+db_name_env = os.getenv("DB_NAME")
 
 @pytest.fixture
 def connect_to_db():
@@ -9,9 +18,9 @@ def connect_to_db():
        kterou po testech smaže"""
     try:
         conn = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "19791979"
+            host = host_env,
+            user = user_env,
+            password = password_env
             )
         cursor = conn.cursor()
         cursor.execute("CREATE DATABASE IF NOT EXISTS test_library;")
@@ -27,9 +36,9 @@ def connect_to_db():
         #smazání testovací databáze, v rámci vizuální kontroly
         #v mySQL Workbench lze případně hashtagnout
         conn_clean = mysql.connector.connect(
-            host = "localhost",
-            user = "root",
-            password = "19791979"
+            host = host_env,
+            user = user_env,
+            password = password_env
             )
         cursor = conn_clean.cursor()
         cursor.execute("DROP DATABASE IF EXISTS test_library;")
