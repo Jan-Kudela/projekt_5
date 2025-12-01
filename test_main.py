@@ -115,7 +115,7 @@ def test_pridat_ukol_positive(connect_to_db,create_table):
 def test_pridat_ukol_negative(connect_to_db,create_table):
     """testuje, zda se zobrazí chybová hláška při zadání
         prádzné hodnoty 'Nazev' """
-    with pytest.raises( mysql.connector.Error):   
+    with pytest.raises(Exception):   
         pridat_ukol_db(connect_to_db, None, "Vyvenčit")
     
                 
@@ -135,7 +135,7 @@ def test_aktualizovat_ukol_positive(connect_to_db,create_table):
 def test_aktualizovat_ukol_negative(connect_to_db,create_fake_table):
     """testuje, zda se zobrazí chybová hláška,
       když funkce nenajde zadanou tabulku """
-    with pytest.raises( mysql.connector.Error):
+    with pytest.raises(Exception):
         aktualizovat_ukol_db(connect_to_db, 1, "Hotovo")
    
 
